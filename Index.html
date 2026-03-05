@@ -1,431 +1,328 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>March Hydrogen Safety Categories — Electrolyzers</title>
 
 <style>
-  :root{
-    --chs-blue:#005e82;
-    --bg:#f5f5f5;
-    --card:#ffffff;
-    --border:#dddddd;
-    --text:#222;
-    --muted:#555;
+:root{
+  --chs-blue:#005e82;
+  --bg:#f5f5f5;
+  --card:#ffffff;
+  --border:#dddddd;
+  --yellow:#f6e58d;
+  --green:#badc58;
+  --blue:#7ed6df;
+  --purple:#c7a7ff;
+}
 
-    /* NYT-ish solved colors */
-    --yellow:#f6e58d;
-    --green:#badc58;
-    --blue:#7ed6df;
-    --purple:#c7a7ff;
-  }
+body{
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  margin:0;
+  padding:20px;
+}
 
-  body{
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    margin:0;
-    padding:20px;
-    color:var(--text);
-  }
+.wrap{ max-width:860px; margin:auto; }
 
-  .wrap{ max-width: 860px; margin:0 auto; }
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px;
+}
 
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:16px;
-  }
+h1{ color:var(--chs-blue); margin:0; }
 
-  header{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-bottom:10px;
-  }
+.sub{ color:#555; font-size:14px; margin-top:4px; }
 
-  h1{
-    margin:0;
-    color:var(--chs-blue);
-    font-size:22px;
-  }
+.meta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
 
-  .sub{
-    margin:0;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.35;
-  }
+.pill{
+  font-size:12px;
+  background:#fafafa;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:6px 10px;
+}
 
-  .meta{
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-top:6px;
-  }
+.controls{
+  margin-top:12px;
+}
 
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 10px;
-    border:1px solid var(--border);
-    border-radius:999px;
-    background:#fafafa;
-    font-size:12px;
-    color:var(--muted);
-  }
-  .pill strong{ color:var(--text); }
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:6px;
+  background:var(--chs-blue);
+  color:white;
+  cursor:pointer;
+  margin-right:6px;
+}
 
-  .controls{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:center;
-    margin:12px 0 6px;
-  }
+button.secondary{ background:#666; }
 
-  button{
-    padding:10px 14px;
-    border:none;
-    border-radius:6px;
-    background: var(--chs-blue);
-    color:#fff;
-    cursor:pointer;
-    font-size:14px;
-  }
-  button.secondary{ background:#666; }
-  button:disabled{ background:#ccc; cursor:default; }
+button:disabled{
+  background:#ccc;
+  cursor:default;
+}
 
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap:12px;
-    margin-top:14px;
-  }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:16px;
+}
 
-  .tile{
-    background:#fff;
-    border:2px solid var(--border);
-    border-radius:8px;
-    padding:14px 10px;
-    cursor:pointer;
-    user-select:none;
-    min-height:66px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font-size:14px;
-    transition: background-color .15s, border-color .15s, transform .05s;
-  }
-  .tile:hover{ transform: translateY(-1px); }
+.tile{
+  border:2px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+  background:white;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+}
 
-  .tile.selected{
-    background:#bfe2f0;
-    border-color: var(--chs-blue);
-  }
+.tile.selected{
+  background:#bfe2f0;
+  border-color:var(--chs-blue);
+}
 
-  .tile.solved{
-    cursor:default;
-    font-weight:bold;
-    border-color: rgba(0,0,0,.15);
-  }
-  .solved.yellow{ background: var(--yellow); }
-  .solved.green { background: var(--green); }
-  .solved.blue  { background: var(--blue); }
-  .solved.purple{ background: var(--purple); }
+.tile.solved{
+  font-weight:bold;
+}
 
-  #message{
-    margin-top:12px;
-    min-height:22px;
-    text-align:center;
-    font-size:14px;
-    color:#333;
-  }
+.solved.yellow{background:var(--yellow);}
+.solved.green{background:var(--green);}
+.solved.blue{background:var(--blue);}
+.solved.purple{background:var(--purple);}
 
-  .answers{
-    display:none;
-    margin-top:16px;
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:14px 16px;
-  }
-  .answers h3{
-    margin:0 0 10px 0;
-    color: var(--chs-blue);
-    font-size:16px;
-  }
-  .group{
-    margin:10px 0;
-    font-size:14px;
-    line-height:1.35;
-  }
+#message{
+  margin-top:12px;
+  min-height:22px;
+}
 
-  .foot{
-    margin-top:12px;
-    text-align:center;
-    font-size:12px;
-    color:#666;
-  }
+.answers{
+  display:none;
+  margin-top:16px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+}
 
-  .error{
-    display:none;
-    margin-top:12px;
-    padding:10px 12px;
-    border-radius:8px;
-    background:#fff0f0;
-    border:1px solid #ffcccc;
-    color:#8a0000;
-    font-size:13px;
-    white-space:pre-wrap;
-  }
+.answers h3{
+  color:var(--chs-blue);
+  margin-top:0;
+}
+
+.group{ margin-bottom:10px; }
+
+.foot{
+  margin-top:12px;
+  font-size:12px;
+  color:#666;
+}
 </style>
 </head>
 
 <body>
+
 <div class="wrap">
-  <div class="card">
+<div class="card">
 
-    <header>
-      <h1>March Hydrogen Safety Categories — Electrolyzers</h1>
-      <p class="sub">
-        Select 4 related terms to form a category. Shuffle anytime. You’ll get a “One away!” hint when 3 of 4 match a real category.
-      </p>
-      <div class="meta">
-        <div class="pill">⏱ Time: <strong id="timer">00:00</strong></div>
-        <div class="pill">✅ Categories solved: <strong id="solvedCount">0</strong>/4</div>
-        <div class="pill">🔌 Theme: <strong>Electrolyzers</strong></div>
-      </div>
-    </header>
+<h1>March Hydrogen Safety Categories — Electrolyzers</h1>
+<p class="sub">
+Select 4 related terms to form a category. Shuffle anytime. A “One away!” hint appears when you are close.
+</p>
 
-    <div class="controls">
-      <button id="submitBtn" disabled>Submit Selection</button>
-      <button id="shuffleBtn" class="secondary">Shuffle Tiles</button>
-      <button id="revealBtn" class="secondary">Reveal Answers</button>
-    </div>
+<div class="meta">
+<div class="pill">⏱ Time: <strong id="timer">00:00</strong></div>
+<div class="pill">Categories solved: <strong id="solvedCount">0</strong>/4</div>
+</div>
 
-    <div id="grid" class="grid" aria-label="Puzzle tiles"></div>
-    <div id="message"></div>
-    <div id="errorBox" class="error"></div>
+<div class="controls">
+<button id="submitBtn" disabled>Submit Selection</button>
+<button id="shuffleBtn" class="secondary">Shuffle Tiles</button>
+<button id="revealBtn" class="secondary">Reveal Answers</button>
+</div>
 
-    <div id="answers" class="answers">
-      <h3>March Electrolyzer Edition — Solution</h3>
+<div id="grid" class="grid"></div>
+<div id="message"></div>
 
-      <div class="group"><strong>🟨 Electrolyzer Subsystems</strong><br>
-        Stack • Balance of Plant • Rectifier • Deionized Water System
-      </div>
+<div id="answers" class="answers">
 
-      <div class="group"><strong>🟩 Control & Protective Functions</strong><br>
-        Emergency Stop • Pressure Relief Device • Hydrogen Detector • Ventilation Interlock
-      </div>
+<h3>Solution</h3>
 
-      <div class="group"><strong>🟦 Operating Parameters</strong><br>
-        Current Density • Cell Voltage • Differential Pressure • Water Conductivity
-      </div>
+<div class="group"><strong>Electrolyzer Subsystems</strong><br>
+Stack • Balance of Plant • Rectifier • Deionized Water System
+</div>
 
-      <div class="group"><strong>🟪 Potential Hazards / Failure Modes</strong><br>
-        Membrane Pinholes • Hydrogen Crossover • Caustic Exposure • Oxygen Enrichment
-      </div>
-    </div>
+<div class="group"><strong>Control & Protective Functions</strong><br>
+Emergency Stop • Pressure Relief Device • Hydrogen Detector • Ventilation Interlock
+</div>
 
-    <div class="foot">
-      Tip: Use as a quick training icebreaker for teams working on electrolyzer projects.
-    </div>
+<div class="group"><strong>Operating Parameters</strong><br>
+Current Density • Cell Voltage • Differential Pressure • Water Conductivity
+</div>
 
-  </div>
+<div class="group"><strong>Potential Hazards / Failure Modes</strong><br>
+Membrane Pinholes • Hydrogen Crossover • Caustic Exposure • Oxygen Enrichment
+</div>
+
+</div>
+
+<div class="foot">
+Tip: Use this as a quick training icebreaker for electrolyzer safety discussions.
+</div>
+
+</div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  try {
-    // Terms (16 total)
-    const TERMS = [
-      // Electrolyzer Subsystems
-      "Stack","Balance of Plant","Rectifier","Deionized Water System",
 
-      // Control & Protective Functions
-      "Emergency Stop","Pressure Relief Device","Hydrogen Detector","Ventilation Interlock",
+const TERMS = [
+"Stack","Balance of Plant","Rectifier","Deionized Water System",
+"Emergency Stop","Pressure Relief Device","Hydrogen Detector","Ventilation Interlock",
+"Current Density","Cell Voltage","Differential Pressure","Water Conductivity",
+"Membrane Pinholes","Hydrogen Crossover","Caustic Exposure","Oxygen Enrichment"
+];
 
-      // Operating Parameters
-      "Current Density","Cell Voltage","Differential Pressure","Water Conductivity",
+const GROUPS = [
+{ name:"Electrolyzer Subsystems", items:["Stack","Balance of Plant","Rectifier","Deionized Water System"] },
+{ name:"Control & Protective Functions", items:["Emergency Stop","Pressure Relief Device","Hydrogen Detector","Ventilation Interlock"] },
+{ name:"Operating Parameters", items:["Current Density","Cell Voltage","Differential Pressure","Water Conductivity"] },
+{ name:"Potential Hazards / Failure Modes", items:["Membrane Pinholes","Hydrogen Crossover","Caustic Exposure","Oxygen Enrichment"] }
+];
 
-      // Potential Hazards / Failure Modes
-      "Membrane Pinholes","Hydrogen Crossover","Caustic Exposure","Oxygen Enrichment"
-    ];
+const COLORS=["yellow","green","blue","purple"];
 
-    // Categories (4 groups of 4)
-    const GROUP_TEMPLATES = [
-      { name:"Electrolyzer Subsystems", items:["Stack","Balance of Plant","Rectifier","Deionized Water System"] },
-      { name:"Control & Protective Functions", items:["Emergency Stop","Pressure Relief Device","Hydrogen Detector","Ventilation Interlock"] },
-      { name:"Operating Parameters", items:["Current Density","Cell Voltage","Differential Pressure","Water Conductivity"] },
-      { name:"Potential Hazards / Failure Modes", items:["Membrane Pinholes","Hydrogen Crossover","Caustic Exposure","Oxygen Enrichment"] }
-    ];
+let groups=[...GROUPS];
+let selected=[];
+let solvedMap=new Map();
+let solvedCount=0;
 
-    const COLORS = ["yellow","green","blue","purple"];
+let startTime=null;
+let timerInterval=null;
 
-    const grid = document.getElementById("grid");
-    const submitBtn = document.getElementById("submitBtn");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const revealBtn = document.getElementById("revealBtn");
-    const message = document.getElementById("message");
-    const timerEl = document.getElementById("timer");
-    const solvedCountEl = document.getElementById("solvedCount");
-    const answers = document.getElementById("answers");
-    const errorBox = document.getElementById("errorBox");
+const grid=document.getElementById("grid");
+const submitBtn=document.getElementById("submitBtn");
+const shuffleBtn=document.getElementById("shuffleBtn");
+const revealBtn=document.getElementById("revealBtn");
+const message=document.getElementById("message");
+const timerEl=document.getElementById("timer");
+const solvedCountEl=document.getElementById("solvedCount");
+const answers=document.getElementById("answers");
 
-    let groups = GROUP_TEMPLATES.map(g => ({ name: g.name, items: g.items.slice() }));
-    let selected = [];
-    let solvedMap = new Map(); // term -> color class
-    let solvedCount = 0;
+function shuffle(arr){
+let a=[...arr];
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[a[i],a[j]]=[a[j],a[i]];
+}
+return a;
+}
 
-    // Timer
-    let startTime = null;
-    let timerInterval = null;
+function startTimer(){
+if(startTime) return;
+startTime=Date.now();
+timerInterval=setInterval(()=>{
+let diff=Math.floor((Date.now()-startTime)/1000);
+let mm=String(Math.floor(diff/60)).padStart(2,"0");
+let ss=String(diff%60).padStart(2,"0");
+timerEl.textContent=`${mm}:${ss}`;
+},500);
+}
 
-    function pad2(n){ return String(n).padStart(2,"0"); }
+function render(){
+grid.innerHTML="";
+let shuffled=shuffle(TERMS);
 
-    function startTimer(){
-      if (startTime) return;
-      startTime = Date.now();
-      timerInterval = setInterval(() => {
-        const diff = Math.floor((Date.now() - startTime) / 1000);
-        timerEl.textContent = `${pad2(Math.floor(diff/60))}:${pad2(diff%60)}`;
-      }, 300);
-    }
+shuffled.forEach(term=>{
+let tile=document.createElement("div");
+tile.className="tile";
+tile.textContent=term;
 
-    function stopTimer(){
-      if (!timerInterval) return;
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+if(solvedMap.has(term)){
+tile.classList.add("solved", solvedMap.get(term));
+}
 
-    function shuffle(arr){
-      const a = arr.slice();
-      for (let i=a.length-1; i>0; i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
+tile.onclick=()=>{
+if(tile.classList.contains("solved")) return;
 
-    function clearSelectionsUI(){
-      document.querySelectorAll(".tile.selected").forEach(el => el.classList.remove("selected"));
-      selected = [];
-      submitBtn.disabled = true;
-    }
+startTimer();
 
-    function render(){
-      grid.innerHTML = "";
-      const shuffled = shuffle(TERMS);
+if(selected.includes(term)){
+selected=selected.filter(t=>t!==term);
+tile.classList.remove("selected");
+}else if(selected.length<4){
+selected.push(term);
+tile.classList.add("selected");
+}
 
-      shuffled.forEach(term => {
-        const t = document.createElement("div");
-        t.className = "tile";
-        t.textContent = term;
+submitBtn.disabled=(selected.length!==4);
+};
 
-        if (solvedMap.has(term)){
-          t.classList.add("solved", solvedMap.get(term));
-        }
-
-        t.addEventListener("click", () => {
-          if (t.classList.contains("solved")) return;
-          startTimer();
-
-          if (selected.includes(term)){
-            selected = selected.filter(x => x !== term);
-            t.classList.remove("selected");
-          } else {
-            if (selected.length >= 4) return;
-            selected.push(term);
-            t.classList.add("selected");
-          }
-
-          submitBtn.disabled = (selected.length !== 4);
-          message.textContent = "";
-        });
-
-        grid.appendChild(t);
-      });
-    }
-
-    function oneAwayHint(){
-      for (const g of groups){
-        const cnt = g.items.filter(x => selected.includes(x)).length;
-        if (cnt === 3) return g.name;
-      }
-      return null;
-    }
-
-    function findExactMatchIndex(){
-      return groups.findIndex(g => g.items.every(x => selected.includes(x)));
-    }
-
-    submitBtn.addEventListener("click", () => {
-      const idx = findExactMatchIndex();
-
-      if (idx !== -1){
-        const g = groups[idx];
-        const color = COLORS[solvedCount] || "green";
-
-        g.items.forEach(term => solvedMap.set(term, color));
-        solvedCount++;
-        solvedCountEl.textContent = String(solvedCount);
-        groups.splice(idx, 1);
-
-        message.textContent = `✅ Correct! Category found: ${g.name}`;
-        clearSelectionsUI();
-        render();
-
-        if (solvedCount === 4){
-          stopTimer();
-          message.textContent = "🎉 All categories solved!";
-          submitBtn.disabled = true;
-        }
-      } else {
-        const hint = oneAwayHint();
-        message.textContent = hint
-          ? `🟨 One away! You're close to: ${hint}`
-          : "❌ Not a valid category — try again!";
-        clearSelectionsUI();
-      }
-    });
-
-    shuffleBtn.addEventListener("click", () => {
-      message.textContent = "";
-      clearSelectionsUI();
-      render();
-    });
-
-    revealBtn.addEventListener("click", () => {
-      const ok = confirm("Reveal the answers? This will end the puzzle.");
-      if (!ok) return;
-
-      stopTimer();
-      answers.style.display = "block";
-
-      // Color-lock everything in template order
-      solvedMap = new Map();
-      GROUP_TEMPLATES.forEach((g, i) => {
-        const color = COLORS[i] || "green";
-        g.items.forEach(term => solvedMap.set(term, color));
-      });
-      solvedCount = 4;
-      solvedCountEl.textContent = "4";
-      message.textContent = "Answers revealed.";
-      clearSelectionsUI();
-      render();
-      submitBtn.disabled = true;
-    });
-
-    render();
-
-  } catch (err){
-    errorBox.style.display = "block";
-    errorBox.textContent = "This page hit a script error:\n" + (err && err.message ? err.message : String(err));
-  }
+grid.appendChild(tile);
 });
+}
+
+function findMatch(){
+return groups.findIndex(g=>g.items.every(i=>selected.includes(i)));
+}
+
+function oneAway(){
+return groups.find(g=>g.items.filter(i=>selected.includes(i)).length===3);
+}
+
+submitBtn.onclick=()=>{
+let match=findMatch();
+
+if(match!==-1){
+
+let color=COLORS[solvedCount];
+groups[match].items.forEach(t=>solvedMap.set(t,color));
+
+groups.splice(match,1);
+
+solvedCount++;
+solvedCountEl.textContent=solvedCount;
+
+message.textContent="Correct!";
+
+}else{
+
+let near=oneAway();
+message.textContent=near?"One away!":"Try again.";
+
+}
+
+selected=[];
+submitBtn.disabled=true;
+
+render();
+
+if(solvedCount===4){
+clearInterval(timerInterval);
+message.textContent="All categories solved!";
+}
+};
+
+shuffleBtn.onclick=()=>render();
+
+revealBtn.onclick=()=>{
+answers.style.display="block";
+clearInterval(timerInterval);
+};
+
+render();
+
 </script>
 
 </body>
